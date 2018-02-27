@@ -1,0 +1,59 @@
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+	
+	compileOptions 
+	{
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+	
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task deleteJar(type : Delete){
+    delete 'BazaarIAB.jar'
+}
+
+task createJar(type : Copy){
+    from ('build/intermediates/bundles/release/')
+    into ('build')
+    include ('classes.jar')
+    rename ('classes.jar','BazaarIAB.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
