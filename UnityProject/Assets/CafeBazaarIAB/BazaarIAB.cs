@@ -8,6 +8,11 @@ namespace BazaarPlugin
     {
         private static AndroidJavaObject mPlugin;
 
+        public static string GetVersion()
+        {
+            return "1.0.3";
+        }
+
         static BazaarIAB()
         {
             if (Application.platform != RuntimePlatform.Android)
@@ -17,7 +22,6 @@ namespace BazaarPlugin
             using (var pluginClass = new AndroidJavaClass("com.bazaar.BazaarIABPlugin"))
                 mPlugin = pluginClass.CallStatic<AndroidJavaObject>("instance");
         }
-
 
         // Toggles high detail logging on/off
         public static void enableLogging(bool enable)
@@ -62,13 +66,31 @@ namespace BazaarPlugin
         }
 
 
-        // Sends a request to get all completed purchases and product information as setup in the Play dashboard about the provided skus
+        // Sends a request to get all completed purchases and product information as setup in the CafeBazaar portal about the provided skus
         public static void queryInventory(string[] skus)
         {
             if (Application.platform != RuntimePlatform.Android)
                 return;
 
             mPlugin.Call("queryInventory", new object[] { skus });
+        }
+
+        // Sends a request to get all product information as setup in the CafeBazaar portal about the provided skus
+        public static void querySkuDetails(string[] skus)
+        {
+            if (Application.platform != RuntimePlatform.Android)
+                return;
+
+            mPlugin.Call("querySkuDetails", new object[] { skus });
+        }
+
+        // Sends a request to get all completed purchases
+        public static void queryPurchases()
+        {
+            if (Application.platform != RuntimePlatform.Android)
+                return;
+
+            mPlugin.Call("queryPurchases");
         }
 
 

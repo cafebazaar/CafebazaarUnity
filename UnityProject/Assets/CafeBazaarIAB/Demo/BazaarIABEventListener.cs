@@ -16,20 +16,30 @@ public class BazaarIABEventListener : MonoBehaviour
 		IABEventManager.billingNotSupportedEvent += billingNotSupportedEvent;
 		IABEventManager.queryInventorySucceededEvent += queryInventorySucceededEvent;
 		IABEventManager.queryInventoryFailedEvent += queryInventoryFailedEvent;
-		IABEventManager.purchaseSucceededEvent += purchaseSucceededEvent;
+        IABEventManager.querySkuDetailsSucceededEvent += querySkuDetailsSucceededEvent;
+        IABEventManager.querySkuDetailsFailedEvent += querySkuDetailsFailedEvent;
+        IABEventManager.queryPurchasesSucceededEvent += queryPurchasesSucceededEvent;
+        IABEventManager.queryPurchasesFailedEvent += queryPurchasesFailedEvent;
+        IABEventManager.purchaseSucceededEvent += purchaseSucceededEvent;
 		IABEventManager.purchaseFailedEvent += purchaseFailedEvent;
 		IABEventManager.consumePurchaseSucceededEvent += consumePurchaseSucceededEvent;
 		IABEventManager.consumePurchaseFailedEvent += consumePurchaseFailedEvent;
 	}
 
-	void OnDisable()
+    
+
+    void OnDisable()
 	{
 		// Remove all event handlers
 		IABEventManager.billingSupportedEvent -= billingSupportedEvent;
 		IABEventManager.billingNotSupportedEvent -= billingNotSupportedEvent;
 		IABEventManager.queryInventorySucceededEvent -= queryInventorySucceededEvent;
 		IABEventManager.queryInventoryFailedEvent -= queryInventoryFailedEvent;
-		IABEventManager.purchaseSucceededEvent -= purchaseSucceededEvent;
+        IABEventManager.querySkuDetailsSucceededEvent -= querySkuDetailsSucceededEvent;
+        IABEventManager.querySkuDetailsFailedEvent -= querySkuDetailsFailedEvent;
+        IABEventManager.queryPurchasesSucceededEvent -= queryPurchasesSucceededEvent;
+        IABEventManager.queryPurchasesFailedEvent -= queryPurchasesFailedEvent;
+        IABEventManager.purchaseSucceededEvent -= purchaseSucceededEvent;
 		IABEventManager.purchaseFailedEvent -= purchaseFailedEvent;
 		IABEventManager.consumePurchaseSucceededEvent -= consumePurchaseSucceededEvent;
 		IABEventManager.consumePurchaseFailedEvent -= consumePurchaseFailedEvent;
@@ -68,7 +78,37 @@ public class BazaarIABEventListener : MonoBehaviour
 		Debug.Log("queryInventoryFailedEvent: " + error);
 	}
 
-	void purchaseSucceededEvent(BazaarPurchase purchase)
+    private void querySkuDetailsSucceededEvent(List<BazaarSkuInfo> skus)
+    {
+        Debug.Log(string.Format("querySkuDetailsSucceededEvent. total skus: {0}", skus.Count));
+
+        for (int i = 0; i < skus.Count; ++i)
+        {
+            Debug.Log(skus[i].ToString());
+        }
+    }
+
+    private void querySkuDetailsFailedEvent(string error)
+    {
+        Debug.Log("querySkuDetailsFailedEvent: " + error);
+    }
+
+    private void queryPurchasesSucceededEvent(List<BazaarPurchase> purchases)
+    {
+        Debug.Log(string.Format("queryPurchasesSucceededEvent. total purchases: {0}", purchases.Count));
+
+        for (int i = 0; i < purchases.Count; ++i)
+        {
+            Debug.Log(purchases[i].ToString());
+        }
+    }
+
+    private void queryPurchasesFailedEvent(string error)
+    {
+        Debug.Log("queryPurchasesFailedEvent: " + error);
+    }
+
+    void purchaseSucceededEvent(BazaarPurchase purchase)
 	{
 		Debug.Log("purchaseSucceededEvent: " + purchase);
 	}

@@ -22,6 +22,18 @@ namespace BazaarPlugin
         // Fired when the inventory and purchase history query fails
         public static event Action<string> queryInventoryFailedEvent;
 
+        // Fired when the SkuDetails query has returned
+        public static event Action<List<BazaarSkuInfo>> querySkuDetailsSucceededEvent;
+
+        // Fired when the SkuDetails query fails
+        public static event Action<string> querySkuDetailsFailedEvent;
+
+        // Fired when the purchase history query has returned
+        public static event Action<List<BazaarPurchase>> queryPurchasesSucceededEvent;
+
+        // Fired when the purchase history query fails
+        public static event Action<string> queryPurchasesFailedEvent;
+
         // Fired when a purchase succeeds
         public static event Action<BazaarPurchase> purchaseSucceededEvent;
 
@@ -66,6 +78,36 @@ namespace BazaarPlugin
         public void queryInventoryFailed(string error)
         {
             queryInventoryFailedEvent.SafeInvoke(error);
+        }
+
+        public void querySkuDetailsSucceeded(string jsonStr)
+        {
+            JSONNode dataNode = JSON.Parse(jsonStr);
+
+            JSONArray skusJsonArray = dataNode.AsArray;
+            var skus = BazaarSkuInfo.fromJsonArray(skusJsonArray);
+
+            querySkuDetailsSucceededEvent.SafeInvoke(skus);
+        }
+
+        public void querySkuDetailsFailed(string error)
+        {
+            querySkuDetailsFailedEvent.SafeInvoke(error);
+        }
+
+        public void queryPurchasesSucceeded(string jsonStr)
+        {
+            JSONNode dataNode = JSON.Parse(jsonStr);
+
+            JSONArray purchasesJsonArray = dataNode.AsArray;
+            var purchases = BazaarPurchase.fromJsonArray(purchasesJsonArray);
+
+            queryPurchasesSucceededEvent.SafeInvoke(purchases);
+        }
+
+        public void queryPurchasesFailed(string error)
+        {
+            queryPurchasesFailedEvent.SafeInvoke(error);
         }
 
         public void purchaseSucceeded(string jsonStr)

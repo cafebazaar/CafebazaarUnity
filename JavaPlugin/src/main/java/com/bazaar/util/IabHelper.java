@@ -643,7 +643,151 @@ public class IabHelper {
         queryInventoryAsync(querySkuDetails, null, listener);
     }
 
+	
+	/**
+     * Listener that notifies when an SkuDetails query operation completes.
+     */
+    public interface QuerySkuDetailsFinishedListener {
+        /**
+         * Called to notify that an SkuDetails query operation completed.
+         *
+         * @param result The result of the operation.
+         * @param inv The inventory.
+         */
+        public void onQuerySkuDetailsFinished(IabResult result, Inventory inv);
+    }
+	
+	/**
+     * Asynchronous wrapper for SkuDetails query. This will perform an SkuDetails
+     * query, but will do so asynchronously
+     * and call back the specified listener upon completion. This method is safe to
+     * call from a UI thread.
+     *
+     * @param listener The listener to notify when the refresh operation completes.
+	 * @param skusItems additional PRODUCT skus to query information on, regardless of ownership.
+     */
+	public void querySkuDetailsAsync(final List<String> skusItems, final QuerySkuDetailsFinishedListener listener) {
+		final Handler handler = new Handler();
+        checkNotDisposed();
+        checkSetupDone("querySkuDetails");
+        flagStartAsync("refresh SkuDetails");
+        (new Thread(new Runnable() {
+            public void run() {
+                IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "SkuDetails refresh successful.");
+                Inventory inv = new Inventory();
+                try {
+					try {
+						int r = querySkuDetails(ITEM_TYPE_INAPP, inv, skusItems);
+						if (r != BILLING_RESPONSE_RESULT_OK) {
+							throw new IabException(r, "Error refreshing SkuDetails (querying prices of items).");
+						}
 
+						// if subscriptions are supported, then also query for subscriptions
+						if (mSubscriptionsSupported) {
+							r = querySkuDetails(ITEM_TYPE_SUBS, inv, skusItems);
+							if (r != BILLING_RESPONSE_RESULT_OK) {
+								throw new IabException(r, "Error refreshing SkuDetails (querying prices of subscriptions).");
+							}
+						}
+					}
+					catch (RemoteException e) {
+						throw new IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while refreshing SkuDetails.", e);
+					}
+					catch (JSONException e) {
+						throw new IabException(IABHELPER_BAD_RESPONSE, "Error parsing JSON response while refreshing SkuDetails.", e);
+					}
+                }
+                catch (IabException ex) {
+                    result = ex.getResult();
+                }
+
+                flagEndAsync();
+
+                final IabResult result_f = result;
+                final Inventory inv_f = inv;
+                if (!mDisposed && listener != null) {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            listener.onQuerySkuDetailsFinished(result_f, inv_f);
+                        }
+                    });
+                }
+            }
+        })).start();
+	}
+
+	
+	/**
+     * Listener that notifies when an Purchases query operation completes.
+     */
+    public interface QueryPurchasesFinishedListener {
+        /**
+         * Called to notify that an Purchases query operation completed.
+         *
+         * @param result The result of the operation.
+         * @param inv The inventory.
+         */
+        public void onQueryPurchasesFinished(IabResult result, Inventory inv);
+    }
+	
+	/**
+     * Asynchronous wrapper for purchases query. This will perform an Purchases
+     * query, but will do so asynchronously
+     * and call back the specified listener upon completion. This method is safe to
+     * call from a UI thread.
+     *
+     * @param listener The listener to notify when the refresh operation completes.
+     */
+	public void queryPurchasesAsync(final QueryPurchasesFinishedListener listener) {
+		final Handler handler = new Handler();
+        checkNotDisposed();
+        checkSetupDone("queryPurchases");
+        flagStartAsync("refresh Purchases");
+        (new Thread(new Runnable() {
+            public void run() {
+                IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Purchases refresh successful.");
+                Inventory inv = new Inventory();
+                try {
+					try {
+						int r = queryPurchases(inv, ITEM_TYPE_INAPP);
+						if (r != BILLING_RESPONSE_RESULT_OK) {
+							throw new IabException(r, "Error refreshing inventory (querying owned items).");
+						}
+
+						// if subscriptions are supported, then also query for subscriptions
+						if (mSubscriptionsSupported) {
+							r = queryPurchases(inv, ITEM_TYPE_SUBS);
+							if (r != BILLING_RESPONSE_RESULT_OK) {
+								throw new IabException(r, "Error refreshing inventory (querying owned subscriptions).");
+							}
+						}
+					}
+					catch (RemoteException e) {
+						throw new IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while refreshing Purchases.", e);
+					}
+					catch (JSONException e) {
+						throw new IabException(IABHELPER_BAD_RESPONSE, "Error parsing JSON response while refreshing Purchases.", e);
+					}
+                }
+                catch (IabException ex) {
+                    result = ex.getResult();
+                }
+
+                flagEndAsync();
+
+                final IabResult result_f = result;
+                final Inventory inv_f = inv;
+                if (!mDisposed && listener != null) {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            listener.onQueryPurchasesFinished(result_f, inv_f);
+                        }
+                    });
+                }
+            }
+        })).start();
+	}
+	
     /**
      * Consumes a given in-app product. Consuming can only be done on an item
      * that's owned, and as a result of consumption, the user will no longer own it.

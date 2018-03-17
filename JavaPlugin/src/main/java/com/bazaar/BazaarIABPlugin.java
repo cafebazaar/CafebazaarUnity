@@ -6,6 +6,8 @@ import com.bazaar.util.IabHelper.OnConsumeMultiFinishedListener;
 import com.bazaar.util.IabHelper.OnIabPurchaseFinishedListener;
 import com.bazaar.util.IabHelper.OnIabSetupFinishedListener;
 import com.bazaar.util.IabHelper.QueryInventoryFinishedListener;
+import com.bazaar.util.IabHelper.QuerySkuDetailsFinishedListener;
+import com.bazaar.util.IabHelper.QueryPurchasesFinishedListener;
 import com.bazaar.util.IabResult;
 import com.bazaar.util.Inventory;
 import com.bazaar.util.Purchase;
@@ -25,6 +27,8 @@ import org.json.JSONObject;
 public class BazaarIABPlugin extends BazaarIABPluginBase
 	implements 
 	  IabHelper.QueryInventoryFinishedListener
+	, IabHelper.QuerySkuDetailsFinishedListener
+	, IabHelper.QueryPurchasesFinishedListener
 	, IabHelper.OnIabPurchaseFinishedListener
 	, IabHelper.OnConsumeFinishedListener
 	, IabHelper.OnConsumeMultiFinishedListener
@@ -33,7 +37,6 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 	private static String BILLING_NOT_RUNNING_ERROR = "The billing service is not running or billing is not supported. Aborting.";
 	private List<Purchase> mPurchases = new ArrayList();
 	private List<SkuDetails> mSkus;
-	private boolean mHasQueriedInventory = false;
 	
 	public IabHelper getIabHelper()
 	{
@@ -111,8 +114,6 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 	{
 		if (result.isSuccess())
 		{
-			mHasQueriedInventory = true;
-			
 			mPurchases = inventory.getAllPurchases();
 			mSkus = inventory.getAllSkuDetails();
 			
@@ -121,6 +122,70 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		else
 		{
 			UnitySendMessage("queryInventoryFailed", result.getMessage());
+		}
+	}
+	
+	public void querySkuDetails(final String[] skus)
+	{
+		IABLogger.logEntering(getClass().getSimpleName(), "querySkuDetails", skus);
+		if (mHelper == null)
+		{
+			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		runSafelyOnUiThread(new Runnable()
+		{
+			public void run()
+			{
+				mHelper.querySkuDetailsAsync(Arrays.asList(skus), BazaarIABPlugin.this);
+			}
+		}, "querySkuDetailsFailed");
+	}
+	
+	public void onQuerySkuDetailsFinished(IabResult result, Inventory inventory)
+	{
+		if (result.isSuccess())
+		{
+			mSkus = inventory.getAllSkuDetails();
+			String skusStr = inventory.getAllSkusAsJson().toString();
+			
+			UnitySendMessage("querySkuDetailsSucceeded", skusStr);
+		}
+		else
+		{
+			UnitySendMessage("querySkuDetailsFailed", result.getMessage());
+		}
+	}
+	
+	public void queryPurchases()
+	{
+		IABLogger.logEntering(getClass().getSimpleName(), "queryPurchases");
+		if (mHelper == null)
+		{
+			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		runSafelyOnUiThread(new Runnable()
+		{
+			public void run()
+			{
+				mHelper.queryPurchasesAsync(BazaarIABPlugin.this);
+			}
+		}, "queryInventoryFailed");
+	}
+	
+	public void onQueryPurchasesFinished(IabResult result, Inventory inventory)
+	{
+		if (result.isSuccess())
+		{
+			mPurchases = inventory.getAllPurchases();
+			String purchasesStr = inventory.getAllPurchasesAsJson().toString();
+		
+			UnitySendMessage("queryPurchasesSucceeded", purchasesStr);
+		}
+		else
+		{
+			UnitySendMessage("queryPurchasesFailed", result.getMessage());
 		}
 	}
 	
@@ -133,11 +198,6 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			return;
 		}
 		
-		if (!mHasQueriedInventory) 
-		{
-			Log.w(TAG, "You have not queried your inventory yet so the plugin does not have the required information to protect you from coding errors.");
-		}
-		
 		for (Purchase p : mPurchases)
 		{
 			if (p.getSku().equalsIgnoreCase(sku)) 
@@ -146,32 +206,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			}
 		}
 		
-		String itemType = "inapp";
-		/*if ((!mHasQueriedInventory) || (mSkus == null) || (mSkus.size() == 0)) 
-		{
-			Log.w(TAG, "CANNOT fetch sku type due to either inventory not being queried or it returned no valid skus.");
-		} 
-		else 
-		{
-			for (SkuDetails s : mSkus) 
-			{
-				if (s.getSku().equalsIgnoreCase(sku))
-				{
-					IABLogger.logDebug("found sku \"" + sku + "\" in retrieved skus. setting item type to " + s.getItemType());
-					itemType = s.getItemType();
-					break;
-				}
-			}
-		}
-		
-		if (itemType == null)
-		{
-			Log.i(TAG, sku + ": you have attempted to purchase a sku that was not returned when querying the inventory. We will still let the product go through but it will be defaulted to an inapp type and may not work.");
-			itemType = "inapp";
-		}
-		*/
-		final String f_itemType = itemType;
-		
+		final String f_itemType = "inapp";
 		runSafelyOnUiThread(new Runnable()
 		{
 			public void run()
@@ -208,12 +243,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
-		
-		if (!mHasQueriedInventory) 
-		{
-			Log.w(TAG, "You have not queried your inventory yet so the plugin does not have the required information to protect you from coding errors.");
-		}
-		
+			
 		final Purchase purchase = getPurchasedProductForSku(sku);
 		if (purchase == null)
 		{

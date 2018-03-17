@@ -6,6 +6,13 @@ public class IABTestUI : MonoBehaviour
 {
 #if UNITY_ANDROID
 
+    // Enter all the available skus from the CafeBazaar Developer Portal in this array so that item information can be fetched for them
+    string[] skus = { "com.fanafzar.bazaarplugin.test1"
+                , "com.fanafzar.bazaarplugin.test2"
+                , "com.fanafzar.bazaarplugin.test3"
+                , "com.fanafzar.bazaarplugin.monthly_subscribtion_test"
+                , "com.fanafzar.bazaarplugin.annually_subscribtion_test"};
+
     void OnGUI()
     {
         GUILayout.BeginArea(new Rect(10f, 10f, Screen.width - 15f, Screen.height - 15f));
@@ -20,14 +27,17 @@ public class IABTestUI : MonoBehaviour
 
         if (Button("Query Inventory"))
         {
-            // enter all the available skus from the CafeBazaar Developer Portal in this array so that item information can be fetched for them
-            var skus = new string[] { "com.fanafzar.bazaarplugin.test1"
-                , "com.fanafzar.bazaarplugin.test2"
-                , "com.fanafzar.bazaarplugin.test3"
-                , "com.fanafzar.bazaarplugin.monthly_subscribtion_test"
-                , "com.fanafzar.bazaarplugin.annually_subscribtion_test"};
-
             BazaarIAB.queryInventory(skus);
+        }
+
+        if (Button("Query SkuDetails"))
+        {
+            BazaarIAB.querySkuDetails(skus);
+        }
+
+        if (Button("Query Purchases"))
+        {
+            BazaarIAB.queryPurchases();
         }
 
         if (Button("Are subscriptions supported?"))

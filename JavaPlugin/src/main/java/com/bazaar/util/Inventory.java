@@ -101,7 +101,7 @@ public class Inventory {
         mPurchaseMap.put(p.getSku(), p);
     }
 	
-	private JSONArray getAllSkusAsJson() {
+	public JSONArray getAllSkusAsJson() {
 		try {
 			JSONArray json = new JSONArray();
 			for (SkuDetails skuDetails : this.mSkuMap.values()) {
@@ -110,12 +110,12 @@ public class Inventory {
 			return json;
 		}
 		catch (JSONException e)	{
-			Log.i(TAG, "Error creating JSON from skus" + e.getMessage());
+			Log.i(TAG, "Error creating JSON from skus " + e.getMessage());
 		}
 		return new JSONArray();
 	}
 	
-	private JSONArray getAllPurchasesAsJson() {
+	public JSONArray getAllPurchasesAsJson() {
 		try {
 			JSONArray json = new JSONArray();
 			for (Purchase p : this.mPurchaseMap.values()) {
@@ -124,7 +124,7 @@ public class Inventory {
 			return json;
 		}
 		catch (JSONException e)	{
-			Log.i(TAG, "Error creating JSON from skus" + e.getMessage());
+			Log.i(TAG, "Error creating JSON from Purchases " + e.getMessage());
 		}
 		return new JSONArray();
 	}
@@ -139,7 +139,7 @@ public class Inventory {
 			return json.toString();
 		}
 		catch (JSONException e) {
-			Log.i(TAG, "Error creating JSON from skus" + e.getMessage());
+			Log.i(TAG, "Error creating JSON from skus or Purchases " + e.getMessage());
 		}
 		return "{}";
 	}
