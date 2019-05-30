@@ -69,6 +69,13 @@ public static void purchaseProduct(string sku, string developerPayload)
 public static void consumeProduct(string sku)
 // Sends out a request to consume all of the provided products
 public static void consumeProducts(string[] skus)
+
+// Get current app version code
+public static int getVersionCode()
+// Get current app version name
+public static string getVersionName()
+// Get latest version code in market
+public static int getLatestVersionCodeInMarket()
 ```
 
 # Events
