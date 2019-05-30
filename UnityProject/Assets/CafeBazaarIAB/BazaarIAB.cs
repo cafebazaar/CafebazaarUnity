@@ -128,6 +128,38 @@ namespace BazaarPlugin
             mPlugin.Call("consumeProducts", new object[] { skus });
         }
 
+		/**
+		 * return app version code 
+		 */
+		public static int getVersionCode(){
+			if (Application.platform != RuntimePlatform.Android)
+				return 0;
+			
+			return (int)mPlugin.Call<long>("getCurrentVersion");
+		}
+
+		/**
+		 * return app version name
+		 */
+		public static string getVersionName(){
+			if (Application.platform != RuntimePlatform.Android)
+				return "0.0.0";
+
+			return mPlugin.Call<string>("getCurrentVersionName");
+		}
+
+		/**
+		 * return latest version code in market in available update or
+		 * -1 in no update available or
+		 * -2 in case of error
+		 */
+		public static int getLatestVersionCodeInMarket(){
+			if (Application.platform != RuntimePlatform.Android)
+				return -1;
+			
+			return (int)mPlugin.Call<long>("getLatestVersionInMarket");
+		}
+
     }
 }
 
