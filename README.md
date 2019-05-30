@@ -4,6 +4,15 @@ Cafebazaar In-app purchase Unity plugin
 
 Cafebazaar Update-check service plugin
 
+## Improvments
+1. Add Biling systgem prefab with easy to use
+2. Auto reloading system
+3. Retry system
+4. Application Update revision checking
+5. Fix some issues
+
+## Use in Project
+https://cafebazaar.ir/app/ir.goodapp.game.captainmetal
 
 ## BUILD INSTRUCTION
 To build `BazaarIAB.jar` from the java source code:
