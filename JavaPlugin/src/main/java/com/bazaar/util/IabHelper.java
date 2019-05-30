@@ -30,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.farsitel.bazaar.IUpdateCheckService;
 
 import org.json.JSONException;
 
@@ -94,9 +95,13 @@ public class IabHelper {
     // Context we were passed during initialization
     Context mContext;
 
-    // Connection to the service
+    // Connection to the service for billing
     IInAppBillingService mService;
     ServiceConnection mServiceConn;
+
+    // Connection to the service for update checking
+    IUpdateCheckService mUpdateService;
+    ServiceConnection updateServiceConn;
 
     // The request code used to launch purchase flow
     int mRequestCode;
@@ -220,6 +225,7 @@ public class IabHelper {
                 logDebug("Billing service connected.");
                 mService = IInAppBillingService.Stub.asInterface(service);
                 String packageName = mContext.getPackageName();
+
                 try {
                     logDebug("Checking for in-app billing 3 support.");
 
@@ -262,11 +268,41 @@ public class IabHelper {
             }
         };
 
+        updateServiceConn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                logDebug("Update service connected.");
+
+                mUpdateService = IUpdateCheckService.Stub.asInterface( service);
+                try{
+                    long versionCode = mUpdateService.getVersionCode(mContext.getPackageName());
+                    logDebug("Latest Version Code in market = " + versionCode);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mUpdateService = null;
+                logDebug("Update service disconnected.");
+            }
+        };
+
         Intent serviceIntent = new Intent("ir.cafebazaar.pardakht.InAppBillingService.BIND");
         serviceIntent.setPackage("com.farsitel.bazaar");
         if (!mContext.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
             // service available to handle that Intent
-            mContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
+            if(!mContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE)){
+                logDebug("Billing service binding error.");
+
+                if (listener != null) {
+                    listener.onIabSetupFinished(
+                            new IabResult(BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE,
+                                    "Billing service binding error."));
+                }
+            }
         }
         else {
             // no service available to handle that Intent
@@ -276,6 +312,30 @@ public class IabHelper {
                         "Billing service unavailable on device."));
             }
         }
+
+        Intent updateServiceIntent = new Intent("com.farsitel.bazaar.service.UpdateCheckService.BIND");
+        updateServiceIntent.setPackage("com.farsitel.bazaar");
+        if(mContext != null){
+            if(mContext.bindService(updateServiceIntent, updateServiceConn, Context.BIND_AUTO_CREATE)){
+                logDebug("Update service init successfully.");
+            } else {
+                logDebug("Update service init error.");
+            }
+        } else {
+            logDebug("Update service init error beacause mContext is null!.");
+        }
+    }
+
+    public long getLatestVersionCodeInMarket(){
+        if(mUpdateService != null){
+            try {
+                long vc = mUpdateService.getVersionCode(mContext.getPackageName());
+                return vc;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return -2;
     }
 
     /**
@@ -288,8 +348,13 @@ public class IabHelper {
         logDebug("Disposing.");
         mSetupDone = false;
         if (mServiceConn != null) {
-            logDebug("Unbinding from service.");
+            logDebug("Unbinding from billing service.");
             if (mContext != null) mContext.unbindService(mServiceConn);
+        }
+
+        if(mUpdateService != null){
+            logDebug("Unbinding from update service.");
+            if (mContext != null) mContext.unbindService(updateServiceConn);
         }
         mDisposed = true;
         mContext = null;
@@ -525,7 +590,7 @@ public class IabHelper {
     /**
      * Queries the inventory. This will query all owned items from the server, as well as
      * information on additional skus, if specified. This method may block or take long to execute.
-     * Do not call from a UI thread. For that, use the non-blocking version {@link #refreshInventoryAsync}.
+     * Do not call from a UI thread. For that, use the non-blocking version.
      *
      * @param querySkuDetails if true, SKU details (price, description, etc) will be queried as well
      *     as purchase information.
@@ -874,7 +939,7 @@ public class IabHelper {
     }
 
     /**
-     * Same as {@link consumeAsync}, but for multiple items at once.
+     * Same as {@link #consumeAsync(List, OnConsumeMultiFinishedListener)}, but for multiple items at once.
      * @param purchases The list of PurchaseInfo objects representing the purchases to consume.
      * @param listener The listener to notify when the consumption operation finishes.
      */
@@ -1122,7 +1187,8 @@ public class IabHelper {
     }
 
     void logDebug(String msg) {
-        if (mDebugLog) Log.d(mDebugTag, msg);
+        if (mDebugLog)
+            Log.i(mDebugTag, msg);
     }
 
     void logError(String msg) {
