@@ -1,7 +1,8 @@
 
 # CafebazaarUnity
-Cafebazaar In-app purchase Unity plugin.
-Cafebazaar Update-check service plugin.
+Cafebazaar In-app purchase Unity plugin
+
+Cafebazaar Update-check service plugin
 
 
 ## BUILD INSTRUCTION
