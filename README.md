@@ -2,6 +2,8 @@
 # CafebazaarUnity
 Cafebazaar In-app purchase Unity plugin
 
+Cafebazaar Update-check service plugin
+
 
 ## BUILD INSTRUCTION
 To build `BazaarIAB.jar` from the java source code:
