@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fanafzar.bazaarIABTest"
     android:installLocation="preferExternal"
-	
+	 
     android:versionCode="1"
     android:versionName="1.0">
   <supports-screens
