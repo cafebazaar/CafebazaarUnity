@@ -107,3 +107,4 @@ public static event Action<string> consumePurchaseFailedEvent;
 
 # Thanks
 - [mohsen-srn](https://github.com/mohsen-srn) for pointing out the AndroidManifest.xml issue in newer Unity versions.
+- [Hossynkoala](https://github.com/Hossynkoala) for fixing white keyboard issue in AndroidManifest.
