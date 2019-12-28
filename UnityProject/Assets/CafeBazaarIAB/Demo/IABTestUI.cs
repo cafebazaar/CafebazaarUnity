@@ -7,11 +7,9 @@ public class IABTestUI : MonoBehaviour
 #if UNITY_ANDROID
 
     // Enter all the available skus from the CafeBazaar Developer Portal in this array so that item information can be fetched for them
-    string[] skus = { "com.fanafzar.bazaarplugin.test1"
-                , "com.fanafzar.bazaarplugin.test2"
-                , "com.fanafzar.bazaarplugin.test3"
-                , "com.fanafzar.bazaarplugin.monthly_subscribtion_test"
-                , "com.fanafzar.bazaarplugin.annually_subscribtion_test"};
+    string[] skus = { "level01_key",
+                      "com.creeptechz.5key",
+                      "com.creeptechz.10key" };
 
     void OnGUI()
     {
@@ -21,7 +19,7 @@ public class IABTestUI : MonoBehaviour
 
         if (Button("Initialize IAB"))
         {
-            var key = "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDN72wlPXo4pFK78rElKD+nwc9OnHHL+YYAt0o2Fm6H+7pNoOKLk/fbXrmV3jaL2cz99IClllFKEAvo6VbyRyIOD5cWpBCV+IFVobCPs9dtCV0M4DDqpVY2NUR9WownlNMwr/AwmwW750xS8BvQ9zt5+u7VEhLkAJPVxWJfr+kLHI7519s9T5eb58cdAM+bvJ1vT0pGx6te5DrV8IHUUCKpDYPy7kBfc9wdcT6EBUMCAwEAAQ==";
+            var key = "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC5nloPoQjrAbAsTYl4ZTluzzRA0My6JyPup/2Aoi23EnPpV16A3bReFCcXRYIkGrEYkV8sQOLF9OM3oqcEnZvRMbq+Ux9SEpo3pKAN9LnQ+JnhaJRzodgSgUNJ0C6GpOjcBX0csELsz8w68s0FokYKpysrjbRn9KMUa+Gcq3wJeOhtJGUfvkfByG0itSERfmwD0xhPm49FCRtorhYE6qkmavV2G+fBc8xF+Os19QkCAwEAAQ==";
             BazaarIAB.init(key);
         }
 
@@ -45,30 +43,38 @@ public class IABTestUI : MonoBehaviour
             Debug.Log("subscriptions supported: " + BazaarIAB.areSubscriptionsSupported());
         }
 
-        if (Button("Purchase Product Test1"))
+        if (Button("Purchase Product 1 key"))
         {
-            BazaarIAB.purchaseProduct("com.fanafzar.bazaarplugin.test1");
+            BazaarIAB.purchaseProduct(skus[0]);
         }
 
-        if (Button("Purchase Product Test2"))
+        if (Button("Purchase Product 5keys"))
         {
-            BazaarIAB.purchaseProduct("com.fanafzar.bazaarplugin.test2");
+            BazaarIAB.purchaseProduct(skus[1]);
         }
 
-        if (Button("Consume Purchase Test1"))
+        if (Button("Purchase product 10 keys"))
         {
-            BazaarIAB.consumeProduct("com.fanafzar.bazaarplugin.test1");
+            BazaarIAB.purchaseProduct(skus[2]);
         }
 
-        if (Button("Consume Purchase Test2"))
+        if (Button("Consume Purchase 1key"))
         {
-            BazaarIAB.consumeProduct("com.fanafzar.bazaarplugin.test2");
+            BazaarIAB.consumeProduct(skus[0]);
         }
 
+        if (Button("Consume Purchase 5keys"))
+        {
+            BazaarIAB.consumeProduct(skus[1]);
+        }
+        if (Button("Consume Purchase 10keys"))
+        {
+            BazaarIAB.consumeProduct(skus[2]);
+        }
         if (Button("Consume Multiple Purchases"))
         {
-            var skus = new string[] { "com.fanafzar.bazaarplugin.test1", "com.fanafzar.bazaarplugin.test2" };
-            BazaarIAB.consumeProducts(skus);
+            var items = new string[] { skus[0], skus[1] };
+            BazaarIAB.consumeProducts(items);
         }
 
         if (Button("Test Unavailable Item"))
