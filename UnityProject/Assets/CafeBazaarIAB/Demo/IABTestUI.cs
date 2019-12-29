@@ -7,7 +7,7 @@ public class IABTestUI : MonoBehaviour
 #if UNITY_ANDROID
 
     // Enter all the available skus from the CafeBazaar Developer Portal in this array so that item information can be fetched for them
-    string[] skus = { "level01_key",
+    string[] skus = { "com.creeptechz.key",
                       "com.creeptechz.5key",
                       "com.creeptechz.10key" };
 

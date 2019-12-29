@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using BazaarPlugin;
+using UnityEngine;
 
-public class KeyCollection : MonoBehaviour, ICachable<IABRecord>, IEventListner
+public class KeyCollection : MonoBehaviour, ICachable<IABRecord>/*, IEventListner*/
 {
-    //public KeyView[] m_keyViews;
-    [SerializeField] private SaveSystem m_saveSystem;
+    private SaveSystem m_saveSystem;
     #region class methods
     private void Start()
     {
@@ -12,12 +12,13 @@ public class KeyCollection : MonoBehaviour, ICachable<IABRecord>, IEventListner
 
     private void OnEnable()
     {
-        HookEvents();
+        m_saveSystem = new SaveSystem();
+        //HookEvents();
     }
 
     private void OnDisable()
     {
-        UnhookEvents();
+        //UnhookEvents();
     }
     #endregion
 
@@ -49,37 +50,44 @@ public class KeyCollection : MonoBehaviour, ICachable<IABRecord>, IEventListner
         isCacheValid = false;
     }
     #endregion
-    #region IEventlistner impl
-    public void HookEvents()
-    {
-    }
+    //#region IEventlistner impl
+    //public void HookEvents()
+    //{
+    //    IABEventManager.purchaseFailedEvent += IABEventManager_purchaseFailedEvent;
+    //    IABEventManager.purchaseSucceededEvent += IABEventManager_purchaseSucceededEvent;
+    //}
 
-    public void UnhookEvents()
-    {
-    }
-    
-    #endregion
 
-    internal bool RetrieveKey(KeyDefinition m_def)
+    //public void UnhookEvents()
+    //{
+    //    IABEventManager.purchaseFailedEvent -= IABEventManager_purchaseFailedEvent;
+    //    IABEventManager.purchaseSucceededEvent -= IABEventManager_purchaseSucceededEvent;
+    //}
+
+    //private void IABEventManager_purchaseFailedEvent(string obj)
+    //{
+
+    //}
+
+    //private void IABEventManager_purchaseSucceededEvent(BazaarPurchase obj)
+    //{
+    //    cachedObj.AddKeyRecord(obj.PurchaseToken);
+    //}
+
+    //#endregion
+
+    internal bool RetrieveKey(string m_skuDetail)
     {
-        return cachedObj.SinglePurchaseExists(m_def.m_skuDetail);
+        return cachedObj.SinglePurchaseExists(m_skuDetail);
     }
 
     internal void BuyKeyAsync(string sku)
     {
-        BazaarPlugin.BazaarIAB.purchaseProduct(sku);
-        BazaarPlugin.IABEventManager.purchaseFailedEvent += (res) =>
-        {
-
-        };
-
-        BazaarPlugin.IABEventManager.purchaseSucceededEvent += (res) =>
-        {
-        };
+        BazaarIAB.purchaseProduct(sku);
     }
-    internal KeyRecordSituations ConsumeKey(KeyDefinition keyDef)
+    internal KeyRecordSituations ConsumeKey(string sku)
     {
-        var res = cachedObj.ConsumeKeyRecord(keyDef.m_skuDetail);
+        var res = cachedObj.ConsumeKeyRecord(sku);
         if (res == KeyRecordSituations.CONSUMED_SUCCESSFULLY)
         {
             m_saveSystem.SavePurchases(cachedObj);

@@ -52,3 +52,5 @@ crashlytics-build.properties
 
 # fmod log 
 *.log
+# idea IDE
+JavaPlugin/.idea/
