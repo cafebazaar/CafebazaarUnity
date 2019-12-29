@@ -12,20 +12,20 @@ import java.lang.reflect.InvocationTargetException;
 
 public class BazaarIABPluginBase
 {
-	private static BazaarIABPlugin mInstance;
+//	private static BazaarIABPlugin mInstance;
 	protected static final String TAG = "[BazaarAIB][Plugin]";
 	protected static final String MANAGER_NAME = "BazaarPlugin.IABEventManager";
 	private Class<?> mUnityPlayerClass;
 	private Field mUnityPlayerActivityField;
 	private Method mUnitySendMessageMethod;
 	
-	public static BazaarIABPlugin instance()
-	{
-		if (mInstance == null)
-			mInstance = new BazaarIABPlugin();
-		
-		return mInstance;
-	}
+//	public static BazaarIABPlugin instance()
+//	{
+//		if (mInstance == null)
+//			mInstance = new BazaarIABPlugin();
+//
+//		return mInstance;
+//	}
 	
 	public BazaarIABPluginBase()
 	{
