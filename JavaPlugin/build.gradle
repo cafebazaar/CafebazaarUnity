@@ -1,15 +1,17 @@
 
 buildscript {
     repositories {
-        jcenter()
+        google()
+		jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:3.5.2'
     }
 }
 
 allprojects {
     repositories {
+		google()
         jcenter()
     }
 }
@@ -18,12 +20,12 @@ allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -42,7 +44,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 task deleteJar(type : Delete){
@@ -50,7 +52,7 @@ task deleteJar(type : Delete){
 }
 
 task createJar(type : Copy){
-    from ('build/intermediates/bundles/release/')
+    from ('build/intermediates/packaged-classes/release/')
     into ('build')
     include ('classes.jar')
     rename ('classes.jar','BazaarIAB.jar')
