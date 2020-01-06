@@ -58,4 +58,8 @@ task createJar(type : Copy){
     rename ('classes.jar','BazaarIAB.jar')
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2' //Or desired version
+}
+
 createJar.dependsOn(deleteJar, build)
