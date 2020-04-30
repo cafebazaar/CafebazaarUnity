@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -264,7 +266,9 @@ public class IabHelper {
 
         Intent serviceIntent = new Intent("ir.cafebazaar.pardakht.InAppBillingService.BIND");
         serviceIntent.setPackage("com.farsitel.bazaar");
-        if (!mContext.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
+        PackageManager pm=mContext.getPackageManager();
+        List<ResolveInfo> intentServices = pm.queryIntentServices(serviceIntent, 0);
+        if (intentServices != null && !intentServices.isEmpty()) {
             // service available to handle that Intent
             mContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
         }
