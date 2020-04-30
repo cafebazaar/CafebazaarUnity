@@ -109,3 +109,5 @@ public static event Action<string> consumePurchaseFailedEvent;
 - [mohsen-srn](https://github.com/mohsen-srn) for pointing out the AndroidManifest.xml issue in newer Unity versions.
 - [Hossynkoala](https://github.com/Hossynkoala) for fixing white keyboard issue in AndroidManifest.
 - [Mahdad-Baghani](https://github.com/Mahdad-Baghani) help with finding nullReference exception in Unity 2019.3.0f3.
+- [AhM0D](https://github.com/AhM0D) fixed a crash when there is no Cafebazaar app installed on older devices.
+
