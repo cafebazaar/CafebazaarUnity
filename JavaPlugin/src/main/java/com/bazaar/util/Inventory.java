@@ -17,21 +17,21 @@ package com.bazaar.util;
 
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Represents a block of information about in-app items.
  * An Inventory is returned by such methods as {@link IabHelper#queryInventory}.
  */
 public class Inventory {
-	protected static final String TAG = "[BazaarIAB][Inventory]";
+    protected static final String TAG = "[BazaarIAB][Inventory]";
     Map<String,SkuDetails> mSkuMap = new HashMap<String,SkuDetails>();
     Map<String,Purchase> mPurchaseMap = new HashMap<String,Purchase>();
 
@@ -70,16 +70,16 @@ public class Inventory {
     }
 
     /** Returns a list of all owned product IDs. */
-    public List<String> getAllOwnedSkus() {
+    List<String> getAllOwnedSkus() {
         return new ArrayList<String>(mPurchaseMap.keySet());
     }
+
 
     /** Returns a list of all owned product IDs of a given type */
     List<String> getAllOwnedSkus(String itemType) {
         List<String> result = new ArrayList<String>();
         for (Purchase p : mPurchaseMap.values()) {
-            if (p.getItemType().equals(itemType)) 
-				result.add(p.getSku());
+            if (p.getItemType().equals(itemType)) result.add(p.getSku());
         }
         return result;
     }
@@ -88,10 +88,53 @@ public class Inventory {
     public List<Purchase> getAllPurchases() {
         return new ArrayList<Purchase>(mPurchaseMap.values());
     }
-	
-	public List<SkuDetails> getAllSkuDetails() {
-		return new ArrayList(mSkuMap.values());
-	}
+
+    public List<SkuDetails> getAllSkuDetails() {
+        return new ArrayList(mSkuMap.values());
+    }
+
+    public JSONArray getAllSkusAsJson() {
+        try {
+            JSONArray json = new JSONArray();
+            for (SkuDetails skuDetails : this.mSkuMap.values()) {
+                json.put(new JSONObject(skuDetails.toJson()));
+            }
+            return json;
+        }
+        catch (JSONException e)	{
+            Log.i(TAG, "Error creating JSON from skus " + e.getMessage());
+        }
+        return new JSONArray();
+    }
+
+    public JSONArray getAllPurchasesAsJson() {
+        try {
+            JSONArray json = new JSONArray();
+            for (Purchase p : this.mPurchaseMap.values()) {
+                json.put(new JSONObject(p.toJson()));
+            }
+            return json;
+        }
+        catch (JSONException e)	{
+            Log.i(TAG, "Error creating JSON from Purchases " + e.getMessage());
+        }
+        return new JSONArray();
+    }
+
+    public String getAllSkusAndPurchasesAsJson() {
+        try	{
+            JSONObject json = new JSONObject();
+
+            json.put("purchases", getAllPurchasesAsJson());
+            json.put("skus", getAllSkusAsJson());
+
+            return json.toString();
+        }
+        catch (JSONException e) {
+            Log.i(TAG, "Error creating JSON from skus or Purchases " + e.getMessage());
+        }
+        return "{}";
+    }
 
     void addSkuDetails(SkuDetails d) {
         mSkuMap.put(d.getSku(), d);
@@ -100,47 +143,4 @@ public class Inventory {
     void addPurchase(Purchase p) {
         mPurchaseMap.put(p.getSku(), p);
     }
-	
-	public JSONArray getAllSkusAsJson() {
-		try {
-			JSONArray json = new JSONArray();
-			for (SkuDetails skuDetails : this.mSkuMap.values()) {
-				json.put(new JSONObject(skuDetails.toJson()));
-			}
-			return json;
-		}
-		catch (JSONException e)	{
-			Log.i(TAG, "Error creating JSON from skus " + e.getMessage());
-		}
-		return new JSONArray();
-	}
-	
-	public JSONArray getAllPurchasesAsJson() {
-		try {
-			JSONArray json = new JSONArray();
-			for (Purchase p : this.mPurchaseMap.values()) {
-				json.put(new JSONObject(p.toJson()));
-			}
-			return json;
-		}
-		catch (JSONException e)	{
-			Log.i(TAG, "Error creating JSON from Purchases " + e.getMessage());
-		}
-		return new JSONArray();
-	}
-	
-	public String getAllSkusAndPurchasesAsJson() {
-		try	{
-			JSONObject json = new JSONObject();
-			
-			json.put("purchases", getAllPurchasesAsJson());
-			json.put("skus", getAllSkusAsJson());
-			
-			return json.toString();
-		}
-		catch (JSONException e) {
-			Log.i(TAG, "Error creating JSON from skus or Purchases " + e.getMessage());
-		}
-		return "{}";
-	}
 }

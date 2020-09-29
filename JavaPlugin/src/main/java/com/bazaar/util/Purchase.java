@@ -31,7 +31,7 @@ public class Purchase {
     String mDeveloperPayload;
     String mToken;
     String mOriginalJson;
-	String mOriginalJsonWithSignature;
+    String mOriginalJsonWithSignature;
     String mSignature;
 
     public Purchase(String itemType, String jsonPurchaseInfo, String signature) throws JSONException {
@@ -45,25 +45,14 @@ public class Purchase {
         mPurchaseState = jsonObj.optInt("purchaseState");
         mDeveloperPayload = jsonObj.optString("developerPayload");
         mToken = jsonObj.optString("token", jsonObj.optString("purchaseToken"));
-        if (signature == null)
-			mSignature = "NO SIGNATURE RETURNED FROM PLAY";
-		else
-			mSignature = signature;
-		
-		jsonObj.put("signature", mSignature);
-		jsonObj.put("originalJson", mOriginalJson);
-		jsonObj.put("itemType", mItemType);
-		
-		mOriginalJsonWithSignature = jsonObj.toString();
+        mSignature = signature;
 
-    }
-	
-	@Override
-    public boolean equals(Object obj)
-	{
-        return (mSku.equals(((Purchase)obj).mSku) && mPackageName.equals(((Purchase)obj).mPackageName));
-    }
+        jsonObj.put("signature", mSignature);
+        jsonObj.put("originalJson", mOriginalJson);
+        jsonObj.put("itemType", mItemType);
 
+        mOriginalJsonWithSignature = jsonObj.toString();
+    }
 
     public String getItemType() { return mItemType; }
     public String getOrderId() { return mOrderId; }
@@ -76,9 +65,8 @@ public class Purchase {
     public String getOriginalJson() { return mOriginalJson; }
     public String getSignature() { return mSignature; }
 
-	
     @Override
     public String toString() { return "PurchaseInfo(type:" + mItemType + "):" + mOriginalJson; }
-	
-	public String toJson() { return mOriginalJsonWithSignature; }
+
+    public String toJson() { return mOriginalJsonWithSignature; }
 }
