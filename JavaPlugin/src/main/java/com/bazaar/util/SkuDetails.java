@@ -43,14 +43,13 @@ public class SkuDetails {
         mPrice = o.optString("price");
         mTitle = o.optString("title");
         mDescription = o.optString("description");
-		
-		o.put("itemType", mItemType);
-		mJson = o.toString();
+
+        o.put("itemType", mItemType);
+        mJson = o.toString();
     }
 
     public String getSku() { return mSku; }
     public String getType() { return mType; }
-	public String getItemType() { return mItemType; }
     public String getPrice() { return mPrice; }
     public String getTitle() { return mTitle; }
     public String getDescription() { return mDescription; }
@@ -59,6 +58,6 @@ public class SkuDetails {
     public String toString() {
         return "SkuDetails:" + mJson;
     }
-	
-	public String toJson() { return mJson; }
+
+    public String toJson() { return mJson; }
 }
