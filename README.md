@@ -31,6 +31,17 @@ Also add the required permissions to your manifest:
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR" />
+	
+### Targeting API Level 30 or higher
+If you are targeting Android API Level 30 (Android 11) or higher, you need to add the following to the manifest:
+
+	<queries>
+	    <package android:name="com.farsitel.bazaar" />
+
+	    <intent>
+	      <action android:name="ir.cafebazaar.pardakht.InAppBillingService.BIND" />
+	    </intent>
+	</queries>
 
 # Methods	
 Methods are inside `BazaarIAB` class.
