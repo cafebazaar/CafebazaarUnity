@@ -43,8 +43,11 @@ public class ServiceIAB extends IAB {
     // Keys for the response from getPurchaseConfig
     private static final String INTENT_V2_SUPPORT = "INTENT_V2_SUPPORT";
 
+    private final ServiceIAB myIabService;
+
     ServiceIAB(IABLogger logger) {
         super(logger);
+        myIabService = this;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class ServiceIAB extends IAB {
                 }
                 mSetupDone = true;
                 mService = IInAppBillingService.Stub.asInterface(service);
-                listener.connected();
+                listener.connected(myIabService);
 
             }
         };

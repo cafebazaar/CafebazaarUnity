@@ -66,10 +66,13 @@ public class BroadcastIAB extends IAB {
     private WeakReference<BillingSupportCommunication> billingSupportWeakReference;
     private WeakReference<Activity> launchPurchaseActivityWeakReference;
 
+    private final BroadcastIAB mybroadcastIab;
+
     BroadcastIAB(Context context, IABLogger logger, String mSignatureBase64) {
         super(logger);
         this.context = context;
         this.signatureBase64 = mSignatureBase64 != null ? mSignatureBase64 : "secureBroadcastKey";
+        mybroadcastIab = this;
     }
 
     @Override
@@ -124,7 +127,7 @@ public class BroadcastIAB extends IAB {
                         OnConnectListener listener = safeGetFromWeakReference(connectListenerWeakReference);
                         mSetupDone = true;
                         if (listener != null) {
-                            listener.connected();
+                            listener.connected(mybroadcastIab);
                         }
                         break;
                     case receivePurchaseAction:
