@@ -74,12 +74,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				if (result.isSuccess())
 				{
-					UnitySendMessage("billingSupported", "");
+					UnitySendMessage(BazaarUnityCallbacks.BILLING_SUPPORTED, "");
 				}
 				else
 				{
 					Log.i(TAG, "billing not supported: " + result.getMessage());
-					UnitySendMessage("billingNotSupported", result.getMessage());
+					UnitySendMessage(BazaarUnityCallbacks.BILLING_NOT_SUPPORTED, result.getMessage());
 					mHelper = null;
 				}
 			}
@@ -115,12 +115,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("queryInventoryFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_INVENTORY_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("queryInventoryFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_INVENTORY_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -129,7 +129,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				mHelper.queryInventoryAsync(true, Arrays.asList(skus), BazaarIABPlugin.this);
 			}
-		}, "queryInventoryFailed");
+		}, BazaarUnityCallbacks.QUERY_INVENTORY_FAILED);
 	}
 	
 	public void onQueryInventoryFinished(IabResult result, Inventory inventory)
@@ -139,11 +139,11 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			mPurchases = inventory.getAllPurchases();
 			mSkus = inventory.getAllSkuDetails();
 			
-			UnitySendMessage("queryInventorySucceeded", inventory.getAllSkusAndPurchasesAsJson());
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_INVENTORY_SUCCEEDED, inventory.getAllSkusAndPurchasesAsJson());
 		}
 		else
 		{
-			UnitySendMessage("queryInventoryFailed", result.getMessage());
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_INVENTORY_FAILED, result.getMessage());
 		}
 	}
 	
@@ -153,12 +153,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("querySkuDetailsFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_SKU_DETAILS_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("querySkuDetailsFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_SKU_DETAILS_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -167,7 +167,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				mHelper.querySkuDetailsAsync(Arrays.asList(skus), BazaarIABPlugin.this);
 			}
-		}, "querySkuDetailsFailed");
+		}, BazaarUnityCallbacks.QUERY_SKU_DETAILS_FAILED);
 	}
 	
 	public void onQuerySkuDetailsFinished(IabResult result, Inventory inventory)
@@ -177,11 +177,11 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			mSkus = inventory.getAllSkuDetails();
 			String skusStr = inventory.getAllSkusAsJson().toString();
 			
-			UnitySendMessage("querySkuDetailsSucceeded", skusStr);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_SKU_DETAILS_SUCCEEDED, skusStr);
 		}
 		else
 		{
-			UnitySendMessage("querySkuDetailsFailed", result.getMessage());
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_SKU_DETAILS_FAILED, result.getMessage());
 		}
 	}
 	
@@ -191,12 +191,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("queryPurchasesFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_PURCHASES_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("queryPurchasesFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_PURCHASES_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -205,7 +205,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				mHelper.queryPurchasesAsync(BazaarIABPlugin.this);
 			}
-		}, "queryInventoryFailed");
+		}, BazaarUnityCallbacks.QUERY_PURCHASES_FAILED);
 	}
 	
 	public void onQueryPurchasesFinished(IabResult result, Inventory inventory)
@@ -215,11 +215,11 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			mPurchases = inventory.getAllPurchases();
 			String purchasesStr = inventory.getAllPurchasesAsJson().toString();
 		
-			UnitySendMessage("queryPurchasesSucceeded", purchasesStr);
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_PURCHASES_SUCCEEDED, purchasesStr);
 		}
 		else
 		{
-			UnitySendMessage("queryPurchasesFailed", result.getMessage());
+			UnitySendMessage(BazaarUnityCallbacks.QUERY_PURCHASES_FAILED, result.getMessage());
 		}
 	}
 	
@@ -229,12 +229,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("purchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.PURCHASE_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("purchaseFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.PURCHASE_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		
@@ -257,7 +257,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 				proxyStarter.putExtra("developerPayload", developerPayload);
 				getActivity().startActivity(proxyStarter);
 			}
-		}, "purchaseFailed");
+		}, BazaarUnityCallbacks.PURCHASE_FAILED);
 	}
 	
 	public void onIabPurchaseFinished(IabResult result, Purchase info)
@@ -267,11 +267,11 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			if (!mPurchases.contains(info)) {
 				mPurchases.add(info);
 			}
-			UnitySendMessage("purchaseSucceeded", info.toJson());
+			UnitySendMessage(BazaarUnityCallbacks.PURCHASE_SUCCEEDED, info.toJson());
 		}
 		else
 		{
-			UnitySendMessage("purchaseFailed", result.getMessage());
+			UnitySendMessage(BazaarUnityCallbacks.PURCHASE_FAILED, result.getMessage());
 		}
 	}
 	
@@ -281,12 +281,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("consumePurchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("consumePurchaseFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 			
@@ -294,7 +294,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (purchase == null)
 		{
 			Log.i(TAG, "Attempting to consume an item that has not been purchased. Aborting to avoid exception. sku: " + sku);
-			UnitySendMessage("consumePurchaseFailed", sku + ": you cannot consume a project that has not been purchased or if you have not first queried your inventory to retreive the purchases.");
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, sku + ": you cannot consume a project that has not been purchased or if you have not first queried your inventory to retreive the purchases.");
 			return;
 		}
 		
@@ -304,7 +304,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				mHelper.consumeAsync(purchase, BazaarIABPlugin.this);
 			}
-		}, "consumePurchaseFailed");
+		}, BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED);
 	}
 	
 	private Purchase getPurchasedProductForSku(String sku)
@@ -328,12 +328,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 				mPurchases.remove(purchase);
 			}
 			
-			UnitySendMessage("consumePurchaseSucceeded", purchase.toJson());
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_SUCCEEDED, purchase.toJson());
 		}
 		else
 		{
 			String res = purchase.getSku() + ": " + result.getMessage();
-			UnitySendMessage("consumePurchaseFailed", res);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, res);
 		}
 	}
 	
@@ -343,12 +343,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
-			UnitySendMessage("consumePurchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, BILLING_NOT_RUNNING_ERROR);
 			return;
 		}
 		if (mHelper.connectionIsNull()){
 			Log.i(TAG, STORE_CONNECTION_IS_NULL);
-			UnitySendMessage("consumePurchaseFailed", STORE_CONNECTION_IS_NULL);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		
@@ -356,7 +356,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		{
 			String error = "there are no purchases available to consume";
 			Log.e(TAG, error);
-			UnitySendMessage("consumePurchaseFailed", error);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, error);
 			return;
 		}
 		
@@ -374,7 +374,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		{
 			String error = "Attempting to consume " + skus.length + " item(s) but only " + confirmedPurchases.size() + " item(s) were found to be purchased. Aborting.";
 			Log.i(TAG, error);
-			UnitySendMessage("consumePurchaseFailed", error);
+			UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, error);
 			return;
 		}
 		
@@ -384,7 +384,7 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 			{
 				mHelper.consumeAsync(confirmedPurchases, BazaarIABPlugin.this);
 			}
-		}, "consumePurchaseFailed");
+		}, BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED);
 	}
 	
 	public void onConsumeMultiFinished(List<Purchase> purchases, List<IabResult> results)
@@ -400,12 +400,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 					mPurchases.remove(purchase);
 				}
 				
-				UnitySendMessage("consumePurchaseSucceeded", purchase.toJson());
+				UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_SUCCEEDED, purchase.toJson());
 			}
 			else
 			{
 				String res = purchase.getSku() + ": " + result.getMessage();
-				UnitySendMessage("consumePurchaseFailed", res);
+				UnitySendMessage(BazaarUnityCallbacks.CONSUME_PURCHASE_FAILED, res);
 			}
 		}
 	}
