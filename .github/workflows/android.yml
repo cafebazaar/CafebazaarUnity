@@ -8,10 +8,10 @@ on:
 
 jobs:
   build:
-    env:
-      working-directory: ./JavaPlugin
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: JavaPlugin
     steps:
     - uses: actions/checkout@v3
     - name: set up JDK 11
