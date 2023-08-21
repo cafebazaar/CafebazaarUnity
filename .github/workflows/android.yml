@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-
+    env:
+      working-directory: ./JavaPlugin
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +20,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: gradle
-    - name: Go to JavaPlugin folder
-      run: cd JavaPlugin
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
