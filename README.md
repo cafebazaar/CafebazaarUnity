@@ -1,6 +1,8 @@
 
+[![Android CI](https://github.com/AminSojoudi/CafebazaarUnity/actions/workflows/android.yml/badge.svg?branch=master)](https://github.com/AminSojoudi/CafebazaarUnity/actions/workflows/android.yml)
 # CafebazaarUnity
 Cafebazaar In-app purchase Unity plugin
+
 
 
 ## BUILD INSTRUCTION
