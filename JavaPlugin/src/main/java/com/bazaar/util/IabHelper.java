@@ -180,8 +180,8 @@ public class IabHelper {
 
         OnConnectListener connectListener = new OnConnectListener() {
             @Override
-            public void connected() {
-                checkBillingSupported(listener);
+            public void connected(IAB iabService) {
+                checkBillingSupported(listener, iabService);
             }
         };
 
@@ -204,9 +204,14 @@ public class IabHelper {
         }
     }
 
-    private void checkBillingSupported(final OnIabSetupFinishedListener listener) {
+    private void checkBillingSupported(final OnIabSetupFinishedListener listener, IAB iabService) {
         String packageName = mContext.getPackageName();
-        iabConnection.isBillingSupported(3, packageName, new BillingSupportCommunication() {
+        if(iabService == null) {
+            IabResult iabResult = new IabResult(BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE, "Billing service unavailable on device.");
+            listener.onIabSetupFinished(iabResult);
+            return;
+        }
+        iabService.isBillingSupported(3, packageName, new BillingSupportCommunication() {
             @Override
             public void onBillingSupportResult(int response) {
 
@@ -251,6 +256,10 @@ public class IabHelper {
         if (mDisposed) {
             throw new IllegalStateException("IabHelper was disposed of, so it cannot be used.");
         }
+    }
+
+    public boolean connectionIsNull(){
+        return iabConnection == null;
     }
 
     /**
@@ -306,7 +315,7 @@ public class IabHelper {
      * Initiate the UI flow for an in-app purchase. Call this method to initiate an in-app purchase,
      * which will involve bringing up the Google Play screen. The calling activity will be paused while
      * the user interacts with Google Play, and the result will be delivered via the activity's
-     * {@link android.app.Activity#onActivityResult} method, at which point you must call
+     * {@link android.app.Activity# onActivityResult} method, at which point you must call
      * this object's {@link #handleActivityResult} method to continue the purchase flow. This method
      * MUST be called from the UI thread of the Activity.
      *
