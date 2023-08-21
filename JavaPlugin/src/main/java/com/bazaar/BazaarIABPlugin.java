@@ -33,7 +33,9 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 	, IabHelper.OnConsumeFinishedListener
 	, IabHelper.OnConsumeMultiFinishedListener
 {
-	private static String BILLING_NOT_RUNNING_ERROR = "The billing service is not running or billing is not supported. Aborting.";
+	private static final String BILLING_NOT_RUNNING_ERROR = "The billing service is not running or billing is not supported. Aborting.";
+	private static final String STORE_CONNECTION_IS_NULL = "The billing service connection is null";
+
 	private static BazaarIABPlugin mInstance;
 	
 	private IabHelper mHelper;
@@ -100,6 +102,10 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null) {
 			return false;
 		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			return false;
+		}
 		return mHelper.subscriptionsSupported();
 	}
 	
@@ -109,6 +115,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("queryInventoryFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("queryInventoryFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -141,6 +153,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("querySkuDetailsFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("querySkuDetailsFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -173,6 +191,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("queryPurchasesFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("queryPurchasesFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		runSafelyOnUiThread(new Runnable()
@@ -205,6 +229,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("purchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("purchaseFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		
@@ -251,6 +281,12 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("consumePurchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("consumePurchaseFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 			
@@ -307,12 +343,20 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		if (mHelper == null)
 		{
 			Log.i(TAG, BILLING_NOT_RUNNING_ERROR);
+			UnitySendMessage("consumePurchaseFailed", BILLING_NOT_RUNNING_ERROR);
+			return;
+		}
+		if (mHelper.connectionIsNull()){
+			Log.i(TAG, STORE_CONNECTION_IS_NULL);
+			UnitySendMessage("consumePurchaseFailed", STORE_CONNECTION_IS_NULL);
 			return;
 		}
 		
 		if ((mPurchases == null) || (mPurchases.size() == 0))
 		{
-			Log.e(TAG, "there are no purchases available to consume");
+			String error = "there are no purchases available to consume";
+			Log.e(TAG, error);
+			UnitySendMessage("consumePurchaseFailed", error);
 			return;
 		}
 		
@@ -328,7 +372,9 @@ public class BazaarIABPlugin extends BazaarIABPluginBase
 		
 		if (confirmedPurchases.size() != skus.length)
 		{
-			Log.i(TAG, "Attempting to consume " + skus.length + " item(s) but only " + confirmedPurchases.size() + " item(s) were found to be purchased. Aborting.");
+			String error = "Attempting to consume " + skus.length + " item(s) but only " + confirmedPurchases.size() + " item(s) were found to be purchased. Aborting.";
+			Log.i(TAG, error);
+			UnitySendMessage("consumePurchaseFailed", error);
 			return;
 		}
 		

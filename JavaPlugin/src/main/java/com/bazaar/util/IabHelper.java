@@ -258,6 +258,10 @@ public class IabHelper {
         }
     }
 
+    public boolean connectionIsNull(){
+        return iabConnection == null;
+    }
+
     /**
      * Returns whether subscriptions are supported.
      */
